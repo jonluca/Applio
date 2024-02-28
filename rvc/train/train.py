@@ -256,6 +256,7 @@ def run(
     scaler = GradScaler(enabled=hps.train.fp16_run)
 
     cache = []
+    # start = time.
     for epoch in range(epoch_str, hps.train.epochs + 1):
         if rank == 0:
             train_and_evaluate(

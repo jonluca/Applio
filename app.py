@@ -63,31 +63,31 @@ with gr.Blocks(theme=my_applio, title="Applio") as Applio:
     with gr.Tab(i18n("Train")):
         train_tab()
 
-    with gr.Tab(i18n("TTS")):
-        tts_tab()
-
-    with gr.Tab(i18n("Voice Blender")):
-        voice_blender_tab()
-
-    with gr.Tab(i18n("Plugins")):
-        plugins_tab()
-
-    with gr.Tab(i18n("Download")):
-        download_tab()
-
-    with gr.Tab(i18n("Report a Bug")):
-        report_tab()
-
-    with gr.Tab(i18n("Extra")):
-        extra_tab()
-
-    with gr.Tab(i18n("Settings")):
-        presence_tab()
-        flask_server_tab()
-        theme_tab()
-        version_tab()
-        lang_tab()
-        restart_tab()
+    # with gr.Tab(i18n("TTS")):
+    #     tts_tab()
+    #
+    # with gr.Tab(i18n("Voice Blender")):
+    #     voice_blender_tab()
+    #
+    # with gr.Tab(i18n("Plugins")):
+    #     plugins_tab()
+    #
+    # with gr.Tab(i18n("Download")):
+    #     download_tab()
+    #
+    # with gr.Tab(i18n("Report a Bug")):
+    #     report_tab()
+    #
+    # with gr.Tab(i18n("Extra")):
+    #     extra_tab()
+    #
+    # with gr.Tab(i18n("Settings")):
+    #     presence_tab()
+    #     flask_server_tab()
+    #     theme_tab()
+    #     version_tab()
+    #     lang_tab()
+    #     restart_tab()
 
 
 if __name__ == "__main__":

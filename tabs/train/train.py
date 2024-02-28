@@ -107,33 +107,35 @@ def save_drop_model(dropbox):
 
 
 # Drop Dataset
-def save_drop_dataset_audio(dropbox, dataset_name):
+def save_drop_dataset_audio(dropbox: str | list[str], dataset_name):
     if not dataset_name:
         gr.Info("Please enter a valid dataset name. Please try again.")
         return None, None
     else:
-        file_extension = os.path.splitext(dropbox)[1][1:].lower()
-        if file_extension not in sup_audioext:
-            gr.Info("The file you dropped is not a valid audio file. Please try again.")
-        else:
-            dataset_name = format_title(dataset_name)
-            audio_file = format_title(os.path.basename(dropbox))
-            dataset_path = os.path.join(now_dir, "assets", "datasets", dataset_name)
-            if not os.path.exists(dataset_path):
-                os.makedirs(dataset_path)
-            destination_path = os.path.join(dataset_path, audio_file)
-            if os.path.exists(destination_path):
-                os.remove(destination_path)
-            os.rename(dropbox, destination_path)
-            gr.Info(
-                i18n(
-                    "The audio file has been successfully added to the dataset. Please click the preprocess button."
+        files = dropbox if isinstance(dropbox, list) else [dropbox]
+        for file in files:
+            file_extension = os.path.splitext(file)[1][1:].lower()
+            if file_extension not in sup_audioext:
+                gr.Info("The file you dropped is not a valid audio file. Please try again.")
+            else:
+                dataset_name = format_title(dataset_name)
+                audio_file = format_title(os.path.basename(file))
+                dataset_path = os.path.join(now_dir, "assets", "datasets", dataset_name)
+                if not os.path.exists(dataset_path):
+                    os.makedirs(dataset_path)
+                destination_path = os.path.join(dataset_path, audio_file)
+                if os.path.exists(destination_path):
+                    os.remove(destination_path)
+                os.rename(file, destination_path)
+                gr.Info(
+                    i18n(
+                        "The audio file has been successfully added to the dataset. Please click the preprocess button."
+                    )
                 )
-            )
-            dataset_path = os.path.dirname(destination_path)
-            relative_dataset_path = os.path.relpath(dataset_path, now_dir)
+                dataset_path = os.path.dirname(destination_path)
+                relative_dataset_path = os.path.relpath(dataset_path, now_dir)
 
-            return None, relative_dataset_path
+        return None, relative_dataset_path
 
 
 # Train Tab
@@ -157,26 +159,18 @@ def train_tab():
                     interactive=True,
                 )
                 refresh_datasets_button = gr.Button(i18n("Refresh Datasets"))
-                dataset_creator = gr.Checkbox(
-                    label=i18n("Dataset Creator"),
-                    value=False,
+                dataset_name = gr.Textbox(
+                    label=i18n("Dataset Name"),
+                    info=i18n("Name of the new dataset."),
+                    placeholder=i18n("Enter dataset name"),
                     interactive=True,
-                    visible=True,
                 )
-
-                with gr.Column(visible=False) as dataset_creator_settings:
-                    with gr.Accordion(i18n("Dataset Creator")):
-                        dataset_name = gr.Textbox(
-                            label=i18n("Dataset Name"),
-                            info=i18n("Name of the new dataset."),
-                            placeholder=i18n("Enter dataset name"),
-                            interactive=True,
-                        )
-                        upload_audio_dataset = gr.File(
-                            label=i18n("Upload Audio Dataset"),
-                            type="filepath",
-                            interactive=True,
-                        )
+                upload_audio_dataset = gr.File(
+                    label=i18n("Upload Audio Dataset"),
+                    type="filepath",
+                    file_count="multiple",
+                    interactive=True,
+                )
 
             with gr.Column():
                 sampling_rate = gr.Radio(
@@ -426,18 +420,12 @@ def train_tab():
             )
 
             def toggle_visible(checkbox):
-                return {"visible": checkbox, "__type__": "update"}
+                return {"visible": True, "__type__": "update"}
 
             refresh_datasets_button.click(
                 fn=refresh_datasets,
                 inputs=[],
                 outputs=[dataset_path],
-            )
-
-            dataset_creator.change(
-                fn=toggle_visible,
-                inputs=[dataset_creator],
-                outputs=[dataset_creator_settings],
             )
 
             upload_audio_dataset.upload(
